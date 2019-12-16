@@ -1,0 +1,40 @@
+version: "3"
+
+
+services:
+  balancer:
+    image: nginx
+    volumes:
+      - ./nginx/etc/default.conf:/etc/nginx/conf.d/default.conf
+    links:
+      - web
+      - tomcat
+    ports:
+     - "80:80/tcp"
+
+  web:
+    build: apache2/
+    volumes:
+      - ./web/etc/sites-enabled:/etc/apache2/sites-enabled
+      - ./web/www:/var/www/site
+    links:
+        - db
+
+
+  tomcat:
+    build: tomcat/
+    ports:
+      - "8080:8080"
+
+
+  db:
+    image: percona:5.7
+    volumes:
+      - ./mysql/configs/my.cnf:/etc/mysql/conf.d/custom.cnf
+      - ./mysql/mysql:/var/lib/mysql
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: testDb
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root

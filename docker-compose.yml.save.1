@@ -1,0 +1,39 @@
+
+version: "3"
+
+
+
+services:
+  balancer:
+    image: nginx
+
+    volumes:
+      - ./nginx/etc/default.conf:etc/nginx/conf.d/default.conf
+    ports:
+     - "80:80/tcp"
+    links:
+      - web
+
+  web:
+    build: apache2/
+    volumes:
+      - ./web/etc/sites-enabled:/etc/apache2/sites-enabled
+      - ./web/www:/var/www/site
+    links:
+      - db
+    ports: 
+     - "3000:3000"
+  db:
+
+        image: mysql:5.7
+        ports:
+            - 3306:3306
+        volumes:
+            - "./.data/db:/var/lib/mysql"
+            - ./mysql/configs/my.cnf:/etc/mysql/conf.d/custom.cnf            - ./mysql/mysql:/var/lib/mysql
+
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: ttt
+            MYSQL_USER: root
+            MYSQL_PASSWORD: root

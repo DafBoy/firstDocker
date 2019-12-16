@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  balancer:
+    image: nginx
+    ports:
+     - "8011:80/tcp"
+    links:
+      - web
+
+  web:
+    build: apache2/ro    volumes:
+      - ./web/etc/sites-enabled:/etc/apache2/sites-enabled
+      - ./web/www:/var/www/site
+    links:
+      - db
+    ports:
+      - "8081:100"
+  db:
+
+        image: mysql:5.7.15
+        ports:
+            - 3306:3306
+        volumes:
+            - "./.data/db:/var/lib/mysql"
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
